@@ -38,8 +38,8 @@ export interface CreateProductData {
   isFragile: boolean;
   priority: string;
   supplier: string;
-  notes: string;
-  images: string[];
+  notes?: string;
+  images?: string[];
   discount: number;
   featured: boolean;
   status: string;

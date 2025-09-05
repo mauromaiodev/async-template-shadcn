@@ -12,6 +12,8 @@ export async function POST(request: NextRequest) {
 
     const newProduct: Product = {
       ...data,
+      notes: data.notes || "",
+      images: data.images || [],
       id: Date.now().toString(),
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
