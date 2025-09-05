@@ -1,17 +1,5 @@
 "use client";
 
-import { useState } from "react";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -23,10 +11,22 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { useToast } from "@/hooks/use-toast";
 import { productApi } from "@/lib/api";
 import { Product } from "@/types/product";
-import { Trash2, Edit, Package } from "lucide-react";
-import { useToast } from "@/hooks/use-toast";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { Edit, ImageIcon, Package, Trash2 } from "lucide-react";
+import Image from "next/image";
 
 interface ProductListProps {
   onEditProduct: (product: Product) => void;
@@ -126,11 +126,49 @@ export function ProductList({ onEditProduct }: ProductListProps) {
             <CardDescription>{product.category}</CardDescription>
           </CardHeader>
           <CardContent>
+            {/* Preview da imagem */}
+            {product.images && product.images.length > 0 ? (
+              <div className="mb-4">
+                <div className="relative w-full h-48 rounded-lg border overflow-hidden">
+                  <Image
+                    src={product.images[0]}
+                    alt={product.name}
+                    fill
+                    className="object-cover"
+                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                  />
+                </div>
+                <div className="hidden w-full h-48 bg-gray-100 rounded-lg border items-center justify-center">
+                  <div className="text-center text-gray-400">
+                    <ImageIcon className="h-12 w-12 mx-auto mb-2" />
+                    <p className="text-sm">Imagem não disponível</p>
+                  </div>
+                </div>
+                {product.images.length > 1 && (
+                  <p className="text-xs text-gray-500 mt-1">
+                    +{product.images.length - 1} imagem
+                    {product.images.length > 2 ? "s" : ""} adicional
+                    {product.images.length > 2 ? "is" : ""}
+                  </p>
+                )}
+              </div>
+            ) : (
+              <div className="mb-4 w-full h-48 bg-gray-100 rounded-lg border flex items-center justify-center">
+                <div className="text-center text-gray-400">
+                  <ImageIcon className="h-12 w-12 mx-auto mb-2" />
+                  <p className="text-sm">Sem imagem</p>
+                </div>
+              </div>
+            )}
+
             <p className="text-sm text-gray-600 line-clamp-3 mb-3">
               {product.description}
             </p>
             <p className="text-2xl font-bold text-green-600">
-              R$ {product.price.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}
+              R${" "}
+              {product.price.toLocaleString("pt-BR", {
+                minimumFractionDigits: 2,
+              })}
             </p>
           </CardContent>
           <CardFooter className="flex gap-2">
@@ -143,7 +181,7 @@ export function ProductList({ onEditProduct }: ProductListProps) {
               <Edit className="h-4 w-4 mr-2" />
               Editar
             </Button>
-            
+
             <AlertDialog>
               <AlertDialogTrigger asChild>
                 <Button variant="destructive" size="sm">
@@ -154,8 +192,8 @@ export function ProductList({ onEditProduct }: ProductListProps) {
                 <AlertDialogHeader>
                   <AlertDialogTitle>Confirmar exclusão</AlertDialogTitle>
                   <AlertDialogDescription>
-                    Tem certeza que deseja deletar o produto "{product.name}"? 
-                    Esta ação não pode ser desfeita.
+                    Tem certeza que deseja deletar o produto &quot;
+                    {product.name}&quot;? Esta ação não pode ser desfeita.
                   </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
